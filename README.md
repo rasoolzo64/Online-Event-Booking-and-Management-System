@@ -63,9 +63,3 @@ A full-stack web application for event discovery, booking, and management with r
 - MySQL (v5.7 or higher)
 - Modern web browser
 
-### Setup Steps
-
-1. **Clone the repository**
-   ```bash
-   git clone https://github.com/your-username/online-event-booking-system.git
-   cd online-event-booking-system
