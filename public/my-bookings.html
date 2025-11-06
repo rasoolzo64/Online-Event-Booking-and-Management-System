@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Bookings - EventHub</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <script src="/js/auth.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">EventHub</div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/events.html">Events</a></li>
+                <li><a href="/my-bookings.html" class="active" id="navThirdLink">My Bookings</a></li>
+                
+            </ul>
+            <div class="auth-buttons" id="authButtons">
+                <!-- This will be populated by JavaScript -->
+            </div>
+        </div>
+    </header>
+
+    <section class="container">
+        <h2 class="section-title"><i class="fas fa-ticket-alt"></i> My Bookings</h2>
+
+        <div id="loadingMessage" class="alert alert-info" style="text-align: center;">
+            <p><i class="fas fa-spinner fa-spin"></i> Loading your bookings...</p>
+        </div>
+
+        <div id="bookingsContainer" style="display: none;">
+            <!-- Bookings will be loaded here -->
+        </div>
+    </section>
+
+    <div class="simple-footer">
+        <p>&copy; 2025 EventHub. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Load bookings for both logged-in and guest users
+        async function loadBookings() {
+            try {
+                document.getElementById('loadingMessage').style.display = 'block';
+
+                // Load user-specific bookings
+                const bookingsResponse = await fetch('/api/my-bookings');
+
+                if (!bookingsResponse.ok) {
+                    // If user not logged in, show message
+                    if (bookingsResponse.status === 401) {
+                        document.getElementById('loadingMessage').style.display = 'none';
+                        document.getElementById('bookingsContainer').innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-ticket-alt" style="font-size: 4rem; color: var(--gray-light); margin-bottom: 20px;"></i>
+                                <h3 style="color: var(--dark); margin-bottom: 15px;">Please Login to View Your Bookings</h3>
+                                <p style="color: var(--gray); margin-bottom: 25px;">You need to be logged in to see your personal bookings.</p>
+                                <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap;">
+                                    <a href="/login.html" class="btn btn-primary">
+                                        <i class="fas fa-sign-in-alt"></i> Login
+                                    </a>
+                                    <a href="/register.html" class="btn btn-secondary">
+                                        <i class="fas fa-user-plus"></i> Register
+                                    </a>
+                                </div>
+                            </div>
+                        `;
+                        document.getElementById('bookingsContainer').style.display = 'block';
+                        return;
+                    }
+                    throw new Error('Failed to load bookings');
+                }
+
+                const bookings = await bookingsResponse.json();
+
+                document.getElementById('loadingMessage').style.display = 'none';
+                const bookingsContainer = document.getElementById('bookingsContainer');
+
+                if (bookings.length === 0) {
+                    bookingsContainer.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-calendar-times" style="font-size: 4rem; color: var(--gray-light); margin-bottom: 20px;"></i>
+                            <h3 style="color: var(--dark); margin-bottom: 15px;">No Bookings Found</h3>
+                            <p style="color: var(--gray); margin-bottom: 10px;">You haven't booked any events yet.</p>
+                            <p style="color: var(--gray); margin-bottom: 25px;">Explore our events and book your first ticket!</p>
+                            <a href="/events.html" class="btn btn-primary">
+                                <i class="fas fa-search"></i> Browse Events
+                            </a>
+                        </div>
+                    `;
+                } else {
+                    // Display bookings in a card layout instead of table
+                    let html = `
+                        <div class="bookings-stats" style="text-align: center; margin-bottom: 40px; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 4px solid var(--primary);">
+                            <h3 style="color: var(--dark); margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px;">
+                                <i class="fas fa-chart-bar"></i> Booking Summary
+                            </h3>
+                            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 25px; margin-top: 20px;">
+                                <div class="stat-card" style="background: linear-gradient(135deg, #667eea, #764ba2);">
+                                    <div class="stat-value">${bookings.length}</div>
+                                    <div class="stat-label">Total Bookings</div>
+                                </div>
+                                <div class="stat-card" style="background: linear-gradient(135deg, #f093fb, #f5576c);">
+                                    <div class="stat-value">${bookings.reduce((sum, booking) => sum + booking.tickets, 0)}</div>
+                                    <div class="stat-label">Total Tickets</div>
+                                </div>
+                                <div class="stat-card" style="background: linear-gradient(135deg, #4facfe, #00f2fe);">
+                                    <div class="stat-value">₹${bookings.reduce((sum, booking) => sum + parseFloat(booking.total_amount), 0).toFixed(2)}</div>
+                                    <div class="stat-label">Total Spent</div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="events-grid">
+                    `;
+
+                    bookings.forEach(booking => {
+                        const eventDate = new Date(booking.event_date).toLocaleDateString('en-US', {
+                            weekday: 'short',
+                            year: 'numeric',
+                            month: 'short',
+                            day: 'numeric'
+                        });
+                        const eventTime = new Date(booking.event_date).toLocaleTimeString('en-US', {
+                            hour: '2-digit',
+                            minute: '2-digit'
+                        });
+                        const bookingDate = new Date(booking.booking_date).toLocaleDateString();
+
+                        // Use the EXACT SAME event image from the booking
+                        const eventImage = booking.event_image || getDefaultEventImage(booking.event_title);
+
+                        html += `
+                            <div class="event-card booking-card">
+                                <div class="event-image" style="background-image: url('${eventImage}'); position: relative;">
+                                    <div class="booking-badge" style="background: var(--success);">
+                                        <i class="fas fa-check-circle"></i> ${booking.status || 'CONFIRMED'}
+                                    </div>
+                                </div>
+                                <div class="event-content">
+                                    <h3 class="event-title">${booking.event_title}</h3>
+                                    <div class="event-meta">
+                                        <span><i class="fas fa-calendar-alt"></i> ${eventDate}</span>
+                                        <span><i class="fas fa-clock"></i> ${eventTime}</span>
+                                    </div>
+                                    <div class="event-meta">
+                                        <span><i class="fas fa-map-marker-alt"></i> ${booking.location}</span>
+                                    </div>
+                                    <div class="booking-details" style="background: #f8f9fa; padding: 20px; border-radius: 8px; margin: 20px 0; border-left: 3px solid var(--primary);">
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
+                                            <span style="font-weight: 600; color: var(--dark); display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-ticket-alt"></i> Tickets:
+                                            </span>
+                                            <span style="color: var(--primary); font-weight: bold; font-size: 1.1rem;">${booking.tickets} ${booking.tickets === 1 ? 'ticket' : 'tickets'}</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; margin-bottom: 12px; align-items: center;">
+                                            <span style="font-weight: 600; color: var(--dark); display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-dollar-sign"></i> Total Paid:
+                                            </span>
+                                            <span style="color: var(--success); font-weight: bold; font-size: 1.1rem;">₹${booking.total_amount}</span>
+                                        </div>
+                                        <div style="display: flex; justify-content: space-between; align-items: center;">
+                                            <span style="font-weight: 600; color: var(--dark); display: flex; align-items: center; gap: 8px;">
+                                                <i class="fas fa-calendar-check"></i> Booked On:
+                                            </span>
+                                            <span style="color: var(--gray);">${bookingDate}</span>
+                                        </div>
+                                    </div>
+                                    <div class="event-actions">
+                                        <span class="booking-id" style="color: var(--gray); font-size: 0.9rem; display: flex; align-items: center; gap: 5px;">
+                                            <i class="fas fa-hashtag"></i> Booking #${booking.id}
+                                        </span>
+                                        <span class="event-price" style="background: var(--secondary); color: white; padding: 8px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; display: flex; align-items: center; gap: 5px;">
+                                            <i class="fas fa-check"></i> Ready to Attend
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+
+                    html += `</div>`; // Close events-grid
+                    bookingsContainer.innerHTML = html;
+                }
+
+                bookingsContainer.style.display = 'block';
+
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+                document.getElementById('loadingMessage').style.display = 'none';
+                document.getElementById('bookingsContainer').innerHTML = `
+                    <div class="alert alert-danger" style="text-align: center;">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Error Loading Bookings</h3>
+                        <p>${error.message}</p>
+                        <button onclick="loadBookings()" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-redo"></i> Try Again
+                        </button>
+                    </div>
+                `;
+                document.getElementById('bookingsContainer').style.display = 'block';
+            }
+        }
+
+        // Get appropriate default image based on event type (fallback only)
+        function getDefaultEventImage(title) {
+            const lowerTitle = title.toLowerCase();
+            if (lowerTitle.includes('tech') || lowerTitle.includes('conference')) {
+                return 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=500&h=300&fit=crop';
+            } else if (lowerTitle.includes('music') || lowerTitle.includes('festival')) {
+                return 'https://images.unsplash.com/photo-1470229722913-7c0e2dbbafd3?w=500&h=300&fit=crop';
+            } else if (lowerTitle.includes('workshop') || lowerTitle.includes('business')) {
+                return 'https://images.unsplash.com/photo-1515168833906-d2d02d7b2b14?w=500&h=300&fit=crop';
+            } else if (lowerTitle.includes('art') || lowerTitle.includes('exhibition')) {
+                return 'https://images.unsplash.com/photo-1563089145-599997674d42?w=500&h=300&fit=crop';
+            } else if (lowerTitle.includes('food') || lowerTitle.includes('wine')) {
+                return 'https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=500&h=300&fit=crop';
+            } else {
+                return 'https://images.unsplash.com/photo-1501281668745-f7f57925c3b4?w=500&h=300&fit=crop';
+            }
+        }
+
+        // Update auth buttons and navigation based on user role
+        async function updateAuthAndNavigation() {
+            try {
+                const response = await fetch('/api/user-info');
+                if (!response.ok) {
+                    throw new Error('Failed to fetch user info');
+                }
+
+                const userInfo = await response.json();
+
+                const authButtons = document.getElementById('authButtons');
+                const navThirdLink = document.getElementById('navThirdLink');
+                const adminLink = document.getElementById('adminLink');
+
+                if (userInfo.loggedIn) {
+                    // Update navigation based on role
+                    if (userInfo.user.role === 'organizer') {
+                        if (navThirdLink) {
+                            navThirdLink.textContent = 'Dashboard';
+                            navThirdLink.href = '/organizer-dashboard.html';
+                        }
+                    } else if (userInfo.user.role === 'admin') {
+                        if (navThirdLink) {
+                            navThirdLink.textContent = 'Admin';
+                            navThirdLink.href = '/admin-dashboard.html';
+                        }
+                    } else {
+                        if (navThirdLink) {
+                            navThirdLink.textContent = 'My Bookings';
+                            navThirdLink.href = '/my-bookings.html';
+                        }
+                    }
+
+                    // Show admin link only for admin users
+                    if (adminLink) {
+                        if (userInfo.user.role === 'admin') {
+                            adminLink.style.display = 'block';
+                        } else {
+                            adminLink.style.display = 'none';
+                        }
+                    }
+
+                    // Update auth buttons
+                    if (authButtons) {
+                        authButtons.innerHTML = `
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <span class="welcome-text">
+                            <i class="fas fa-user-circle"></i> Welcome, ${userInfo.user.name}
+                        </span>
+                        <button class="btn btn-outline" onclick="logout()">
+                            <i class="fas fa-sign-out-alt"></i> Logout
+                        </button>
+                    </div>
+                `;
+                    }
+                } else {
+                    if (navThirdLink) {
+                        navThirdLink.textContent = 'My Bookings';
+                        navThirdLink.href = '/my-bookings.html';
+                    }
+                    if (adminLink) adminLink.style.display = 'none';
+
+                    if (authButtons) {
+                        authButtons.innerHTML = `
+                    <div style="display: flex; gap: 10px;">
+                        <a href="/login.html" class="btn btn-outline">
+                            <i class="fas fa-sign-in-alt"></i> Login
+                        </a>
+                        <a href="/register.html" class="btn btn-primary">
+                            <i class="fas fa-user-plus"></i> Register
+                        </a>
+                    </div>
+                `;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        }
+
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/';
+            } catch (error) {
+                console.error('Logout error:', error);
+                window.location.href = '/';
+            }
+        }
+
+        // Load bookings and update auth buttons when page loads
+        document.addEventListener('DOMContentLoaded', function () {
+            updateAuthAndNavigation();
+            loadBookings();
+        });
+    </script>
+
+    <style>
+        .booking-card {
+            border-left: 4px solid var(--success);
+            transition: all 0.3s ease;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+        }
+
+        .booking-details {
+            transition: all 0.3s ease;
+        }
+
+        .booking-details:hover {
+            background: #e9ecef !important;
+        }
+
+        .stat-item {
+            padding: 15px 20px;
+        }
+
+        @media (max-width: 768px) {
+            .bookings-stats .stat-item {
+                flex: 1;
+                min-width: 120px;
+            }
+
+            .booking-details {
+                font-size: 0.9rem;
+            }
+
+            .event-actions {
+                flex-direction: column;
+                gap: 10px;
+                align-items: stretch;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .bookings-stats {
+                padding: 20px;
+            }
+
+            .stat-item {
+                padding: 10px 15px;
+            }
+        }
+    </style>
+</body>
+
+</html>

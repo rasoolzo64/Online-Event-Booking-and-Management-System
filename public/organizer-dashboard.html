@@ -1,0 +1,1564 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Organizer Dashboard - EventHub</title>
+    <link rel="stylesheet" href="/css/style.css" />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <script src="/js/auth.js"></script>
+    <style>
+      :root {
+        --primary: #4361ee;
+        --primary-dark: #3a56d4;
+        --secondary: #7209b7;
+        --success: #4cc9f0;
+        --warning: #f72585;
+        --danger: #e63946;
+        --dark: #2b2d42;
+        --light: #f8f9fa;
+        --gray: #6c757d;
+        --gray-light: #adb5bd;
+        --white: #ffffff;
+        --shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        --shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+        --radius: 10px;
+        --transition: all 0.3s ease;
+      }
+
+      * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+      }
+
+      body {
+        background-color: #f5f7fb;
+        color: var(--dark);
+        line-height: 1.6;
+      }
+
+      .container {
+        width: 100%;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+      }
+
+      /* Header Styles */
+      header {
+        background: linear-gradient(135deg, var(--primary), var(--secondary));
+        color: var(--white);
+        padding: 15px 0;
+        box-shadow: var(--shadow);
+        position: sticky;
+        top: 0;
+        z-index: 100;
+      }
+
+      .header-content {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+      }
+
+      .logo {
+        font-size: 1.8rem;
+        font-weight: 700;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .logo::before {
+        content: "🎪";
+      }
+
+      .nav-menu {
+        display: flex;
+        list-style: none;
+        gap: 25px;
+      }
+
+      .nav-menu a {
+        color: var(--white);
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 12px;
+        border-radius: 5px;
+        transition: var(--transition);
+      }
+
+      .nav-menu a:hover,
+      .nav-menu a.active {
+        background-color: rgba(255, 255, 255, 0.2);
+      }
+
+      .auth-buttons {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+      }
+
+      .welcome-text {
+        color: var(--white);
+        font-weight: 500;
+      }
+
+      /* Button Styles */
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: var(--transition);
+        text-decoration: none;
+        font-size: 0.95rem;
+      }
+
+      .btn-primary {
+        background-color: var(--primary);
+        color: var(--white);
+      }
+
+      .btn-primary:hover {
+        background-color: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+
+      .btn-secondary {
+        background-color: var(--secondary);
+        color: var(--white);
+      }
+
+      .btn-secondary:hover {
+        background-color: #5a08a0;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+
+      .btn-outline {
+        background-color: transparent;
+        color: var(--white);
+        border: 2px solid var(--white);
+      }
+
+      .btn-outline:hover {
+        background-color: var(--white);
+        color: var(--primary);
+      }
+
+      .btn-danger {
+        background-color: var(--danger);
+        color: var(--white);
+      }
+
+      .btn-danger:hover {
+        background-color: #c1121f;
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
+      }
+
+      /* Main Content */
+      section {
+        padding: 30px 0;
+      }
+
+      .section-title {
+        font-size: 2rem;
+        margin-bottom: 30px;
+        color: var(--dark);
+        position: relative;
+        padding-bottom: 10px;
+      }
+
+      .section-title::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+
+        width: 80px;
+        height: 4px;
+        background: linear-gradient(to right, var(--primary), var(--secondary));
+        border-radius: 2px;
+      }
+
+      /* Stats Grid */
+      .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+      }
+
+      .stat-card {
+        color: var(--white);
+        padding: 25px;
+        border-radius: var(--radius);
+        text-align: center;
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .stat-card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.1);
+        transform: translateY(100%);
+        transition: var(--transition);
+      }
+
+      .stat-card:hover::before {
+        transform: translateY(0);
+      }
+
+      .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--shadow-lg);
+      }
+
+      .stat-card .stat-value {
+        font-size: 2.5rem;
+        font-weight: bold;
+        margin-bottom: 5px;
+      }
+
+      .stat-card .stat-label {
+        font-size: 1rem;
+        opacity: 0.9;
+      }
+
+      /* Dashboard Grid */
+      .dashboard-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      @media (max-width: 992px) {
+        .dashboard-grid {
+          grid-template-columns: 1fr;
+        }
+      }
+
+      .dashboard-section {
+        background: var(--white);
+        padding: 25px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        transition: var(--transition);
+      }
+
+      .dashboard-section:hover {
+        box-shadow: var(--shadow-lg);
+        transform: translateY(-2px);
+      }
+
+      .dashboard-section h3 {
+        margin-bottom: 20px;
+        color: var(--dark);
+        border-bottom: 2px solid var(--primary);
+        padding-bottom: 10px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* Quick Actions */
+      .quick-actions {
+        background: var(--white);
+        padding: 25px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+        margin-bottom: 30px;
+      }
+
+      .quick-actions h3 {
+        margin-bottom: 20px;
+        color: var(--dark);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .action-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+      }
+
+      /* Events Section */
+      .events-section {
+        background: var(--white);
+        padding: 25px;
+        border-radius: var(--radius);
+        box-shadow: var(--shadow);
+      }
+
+      .events-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .events-header h3 {
+        color: var(--dark);
+        margin: 0;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+      }
+
+      /* Table Styles */
+      .table-responsive {
+        overflow-x: auto;
+      }
+
+      .table {
+        width: 100%;
+        border-collapse: collapse;
+      }
+
+      .table th,
+      .table td {
+        padding: 12px 15px;
+        text-align: left;
+        border-bottom: 1px solid #e0e0e0;
+      }
+
+      .table th {
+        background-color: #f8f9fa;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .table tr:hover {
+        background-color: #f8f9fa;
+      }
+
+      /* Modal Styles */
+      .modal {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+        justify-content: center;
+        align-items: center;
+        padding: 20px;
+      }
+
+      .modal-content {
+        background: var(--white);
+        padding: 30px;
+        border-radius: var(--radius);
+        width: 100%;
+        max-width: 600px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+      }
+
+      .modal-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+      }
+
+      .modal-header h3 {
+        margin: 0;
+        color: var(--dark);
+      }
+
+      .close-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+        color: var(--gray);
+        transition: var(--transition);
+      }
+
+      .close-btn:hover {
+        color: var(--danger);
+        transform: rotate(90deg);
+      }
+
+      /* Form Styles */
+      .form-group {
+        margin-bottom: 20px;
+      }
+
+      .form-label {
+        display: block;
+        margin-bottom: 8px;
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .form-control {
+        width: 100%;
+        padding: 12px 15px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 1rem;
+        transition: var(--transition);
+      }
+
+      .form-control:focus {
+        outline: none;
+        border-color: var(--primary);
+        box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
+      }
+
+      .form-text {
+        color: var(--gray);
+        font-size: 0.85rem;
+        margin-top: 5px;
+        display: block;
+      }
+
+      .form-actions {
+        display: flex;
+        gap: 10px;
+        justify-content: flex-end;
+        margin-top: 20px;
+      }
+
+      /* Alert Styles */
+      .alert {
+        padding: 15px;
+        border-radius: 5px;
+        margin-bottom: 20px;
+      }
+
+      .alert-info {
+        background-color: #e7f3ff;
+        color: #0c63e4;
+        border-left: 4px solid #0c63e4;
+      }
+
+      .alert-success {
+        background-color: #d1f2eb;
+        color: #0d9276;
+        border-left: 4px solid #0d9276;
+      }
+
+      .alert-danger {
+        background-color: #fde8e8;
+        color: #c53030;
+        border-left: 4px solid #c53030;
+      }
+
+      /* Loading Animation */
+      .loading {
+        display: inline-block;
+        width: 16px;
+        height: 16px;
+        border: 2px solid #ffffff;
+        border-radius: 50%;
+        border-top: 2px solid transparent;
+        animation: spin 1s linear infinite;
+        margin-right: 8px;
+      }
+
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+
+      /* Footer Styles */
+      footer {
+        background-color: var(--dark);
+        color: var(--white);
+        padding: 40px 0 20px;
+      }
+
+      .footer-content {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        margin-bottom: 30px;
+      }
+
+      .footer-section h3 {
+        margin-bottom: 15px;
+        color: var(--white);
+      }
+
+      .footer-section ul {
+        list-style: none;
+      }
+
+      .footer-section ul li {
+        margin-bottom: 10px;
+      }
+
+      .footer-section a {
+        color: var(--gray-light);
+        text-decoration: none;
+        transition: var(--transition);
+      }
+
+      .footer-section a:hover {
+        color: var(--white);
+      }
+
+      .footer-bottom {
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        color: var(--gray-light);
+      }
+
+      /* Responsive Design */
+      @media (max-width: 768px) {
+        .header-content {
+          flex-direction: column;
+          gap: 15px;
+        }
+
+        .nav-menu {
+          gap: 15px;
+        }
+
+        .stats-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+
+        .action-buttons {
+          flex-direction: column;
+        }
+
+        .action-buttons .btn {
+          width: 100%;
+          justify-content: center;
+        }
+      }
+
+      @media (max-width: 576px) {
+        .stats-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .table th,
+        .table td {
+          padding: 8px 10px;
+        }
+
+        .form-actions {
+          flex-direction: column;
+        }
+
+        .form-actions .btn {
+          width: 100%;
+        }
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+      }
+
+      ::-webkit-scrollbar-track {
+        background: #f1f1f1;
+      }
+
+      ::-webkit-scrollbar-thumb {
+        background: var(--primary);
+        border-radius: 4px;
+      }
+
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--primary-dark);
+      }
+
+      /* Empty State */
+      .empty-state {
+        text-align: center;
+        padding: 40px 20px;
+        color: var(--gray);
+      }
+
+      .empty-state i {
+        font-size: 3rem;
+        margin-bottom: 15px;
+        color: var(--gray-light);
+      }
+
+      /* Booking and Event Items */
+      .booking-item,
+      .event-item {
+        padding: 12px;
+        border-bottom: 1px solid #eee;
+        border-left: 3px solid var(--success);
+        transition: var(--transition);
+      }
+
+      .event-item {
+        border-left-color: var(--primary);
+      }
+
+      .booking-item:hover,
+      .event-item:hover {
+        background-color: #f8f9fa;
+      }
+
+      .booking-title,
+      .event-title {
+        font-weight: 600;
+        color: var(--dark);
+      }
+
+      .booking-details,
+      .event-details {
+        color: var(--gray);
+        font-size: 0.9rem;
+        margin-top: 5px;
+      }
+
+      .booking-date,
+      .event-date {
+        color: var(--gray);
+        font-size: 0.8rem;
+        margin-top: 3px;
+      }
+
+      .scroll-container {
+        max-height: 300px;
+        overflow-y: auto;
+        padding-right: 5px;
+      }
+    </style>
+  </head>
+
+  <body>
+    <header>
+      <div class="container header-content">
+        <div class="logo">EventHub</div>
+        <ul class="nav-menu">
+          <li><a href="/">Home</a></li>
+          <li><a href="/events.html">Events</a></li>
+          <li>
+            <a href="/organizer-dashboard.html" class="active">Dashboard</a>
+          </li>
+        </ul>
+        <div class="auth-buttons">
+          <div style="display: flex; align-items: center; gap: 15px">
+            <span class="welcome-text">
+              👋 Welcome, <span id="userWelcome">Organizer</span>
+            </span>
+            <button class="btn btn-outline" onclick="logout()">
+              <i class="fas fa-sign-out-alt"></i> Logout
+            </button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <section class="container">
+      <h2 class="section-title">Organizer Dashboard</h2>
+
+      <div id="loadingMessage" class="alert alert-info">
+        <p><i class="fas fa-spinner fa-spin"></i> Loading dashboard...</p>
+      </div>
+
+      <div id="dashboardContent" style="display: none">
+        <!-- Stats Cards -->
+        <div class="stats-grid">
+          <div
+            class="stat-card"
+            style="background: linear-gradient(135deg, #667eea, #764ba2)"
+          >
+            <div class="stat-value" id="totalEvents">0</div>
+            <div class="stat-label">Total Events</div>
+          </div>
+          <div
+            class="stat-card"
+            style="background: linear-gradient(135deg, #f093fb, #f5576c)"
+          >
+            <div class="stat-value" id="totalTickets">0</div>
+            <div class="stat-label">Tickets Sold</div>
+          </div>
+          <div
+            class="stat-card"
+            style="background: linear-gradient(135deg, #4facfe, #00f2fe)"
+          >
+            <div class="stat-value" id="totalRevenue">₹0</div>
+            <div class="stat-label">Total Revenue</div>
+          </div>
+          <div
+            class="stat-card"
+            style="background: linear-gradient(135deg, #43e97b, #38f9d7)"
+          >
+            <div class="stat-value" id="avgAttendance">0%</div>
+            <div class="stat-label">Avg Attendance</div>
+          </div>
+        </div>
+
+        <div class="dashboard-grid">
+          <!-- Recent Bookings -->
+          <div class="dashboard-section">
+            <h3><i class="fas fa-clipboard-list"></i> Recent Bookings</h3>
+            <div id="recentBookings" class="scroll-container">
+              <!-- Recent bookings will be loaded here -->
+            </div>
+          </div>
+
+          <!-- Upcoming Events -->
+          <div class="dashboard-section">
+            <h3><i class="fas fa-calendar-alt"></i> Upcoming Events</h3>
+            <div id="upcomingEvents" class="scroll-container">
+              <!-- Upcoming events will be loaded here -->
+            </div>
+          </div>
+        </div>
+
+        <!-- Quick Actions -->
+        <div class="quick-actions">
+          <h3><i class="fas fa-rocket"></i> Quick Actions</h3>
+          <div class="action-buttons">
+            <button onclick="showCreateEventModal()" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Create New Event
+            </button>
+
+            <a
+              href="/events.html"
+              class="btn btn-outline"
+              style="color: var(--dark); border-color: var(--dark)"
+            >
+              <i class="fas fa-eye"></i> View Public Events
+            </a>
+          </div>
+        </div>
+
+        <!-- All Events Table -->
+        <!-- All Events Table -->
+        <div class="events-section">
+          <div class="events-header">
+            <h3><i class="fas fa-list"></i> My Events</h3>
+            <div style="display: flex; gap: 10px; align-items: center">
+              <span
+                id="eventsFilterStatus"
+                style="color: var(--gray); font-size: 0.9rem"
+              >
+                Showing all your events
+              </span>
+              <button
+                onclick="loadOrganizerEvents()"
+                class="btn btn-outline"
+                style="color: var(--dark); border-color: var(--dark)"
+              >
+                <i class="fas fa-redo"></i> Refresh
+              </button>
+            </div>
+          </div>
+          <div id="organizerEvents">
+            <!-- Organizer events will be loaded here -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Create Event Modal -->
+    <div id="createEventModal" class="modal">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h3><i class="fas fa-calendar-plus"></i> Create New Event</h3>
+          <button class="close-btn" onclick="hideCreateEventModal()">
+            &times;
+          </button>
+        </div>
+        <div id="createEventMessage"></div>
+        <form id="createEventForm">
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-heading"></i> Event Title *
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              name="title"
+              required
+              placeholder="Enter event title"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-align-left"></i> Description *
+            </label>
+            <textarea
+              class="form-control"
+              name="description"
+              rows="3"
+              required
+              placeholder="Describe your event"
+            ></textarea>
+          </div>
+
+          <!-- Updated Date and Time Section -->
+          <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px">
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-calendar-day"></i> Date *
+              </label>
+              <input
+                type="date"
+                class="form-control"
+                name="eventDate"
+                required
+                id="eventDateInput"
+                min=""
+              />
+            </div>
+            <div class="form-group">
+              <label class="form-label">
+                <i class="fas fa-clock"></i> Time *
+              </label>
+              <input
+                type="time"
+                class="form-control"
+                name="eventTime"
+                required
+                id="eventTimeInput"
+                value="18:00"
+              />
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-map-marker-alt"></i> Location *
+            </label>
+            <input
+              type="text"
+              class="form-control"
+              name="location"
+              required
+              placeholder="Enter event location"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-tag"></i> Price (₹) *
+            </label>
+            <input
+              type="number"
+              class="form-control"
+              name="price"
+              min="0"
+              step="0.01"
+              required
+              placeholder="0.00"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-chair"></i> Total Seats *
+            </label>
+            <input
+              type="number"
+              class="form-control"
+              name="total_seats"
+              min="1"
+              required
+              placeholder="Number of available seats"
+            />
+          </div>
+          <div class="form-group">
+            <label class="form-label">
+              <i class="fas fa-image"></i> Event Image URL (Optional)
+            </label>
+            <input
+              type="url"
+              class="form-control"
+              name="image_url"
+              placeholder="https://images.unsplash.com/photo-..."
+            />
+            <small class="form-text">
+              Leave empty for default event image. Recommended: Use Unsplash
+              URLs
+            </small>
+          </div>
+          <div class="form-actions">
+            <button
+              type="button"
+              class="btn btn-outline"
+              onclick="hideCreateEventModal()"
+              style="color: var(--dark); border-color: var(--dark)"
+            >
+              <i class="fas fa-times"></i> Cancel
+            </button>
+            <button type="submit" class="btn btn-primary">
+              <i class="fas fa-plus"></i> Create Event
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div class="simple-footer">
+      <p>&copy; 2025 EventHub. All rights reserved.</p>
+    </div>
+
+    <script>
+      // Update auth buttons and navigation based on user role
+      async function updateAuthAndNavigation() {
+        try {
+          const response = await fetch("/api/user-info");
+          if (!response.ok) {
+            throw new Error("Failed to fetch user info");
+          }
+
+          const userInfo = await response.json();
+          console.log("User info:", userInfo); // Debug log
+
+          const authButtons = document.getElementById("authButtons");
+          const navThirdLink = document.getElementById("navThirdLink");
+          const adminLink = document.getElementById("adminLink");
+
+          if (userInfo.loggedIn) {
+            console.log("User is logged in with role:", userInfo.user.role); // Debug log
+
+            // Update navigation based on role
+            if (userInfo.user.role === "organizer") {
+              navThirdLink.textContent = "Dashboard";
+              navThirdLink.href = "/organizer-dashboard.html";
+            } else if (userInfo.user.role === "admin") {
+              navThirdLink.textContent = "Admin";
+              navThirdLink.href = "/admin-dashboard.html";
+            } else {
+              navThirdLink.textContent = "My Bookings";
+              navThirdLink.href = "/my-bookings.html";
+            }
+
+            // Show admin link only for admin users
+            if (userInfo.user.role === "admin") {
+              adminLink.style.display = "block";
+              console.log("Admin link shown"); // Debug log
+            } else {
+              adminLink.style.display = "none";
+            }
+
+            // Update auth buttons
+            authButtons.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="welcome-text">
+                        <i class="fas fa-user-circle"></i> Welcome, ${userInfo.user.name}
+                    </span>
+                    <button class="btn btn-outline" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            `;
+          } else {
+            console.log("User not logged in"); // Debug log
+            navThirdLink.textContent = "My Bookings";
+            navThirdLink.href = "/my-bookings.html";
+            if (adminLink) adminLink.style.display = "none";
+
+            authButtons.innerHTML = `
+                <div style="display: flex; gap: 10px;">
+                    <a href="/login.html" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="/register.html" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </div>
+            `;
+          }
+        } catch (error) {
+          console.error("Error checking login status:", error);
+          // Fallback for when API fails
+          const authButtons = document.getElementById("authButtons");
+          authButtons.innerHTML = `
+            <div style="display: flex; gap: 10px;">
+                <a href="/login.html" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/register.html" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            </div>
+        `;
+        }
+      }
+
+      // Logout function
+      async function logout() {
+        try {
+          await fetch("/api/logout", { method: "POST" });
+          window.location.href = "/";
+        } catch (error) {
+          console.error("Logout error:", error);
+          window.location.href = "/";
+        }
+      }
+
+      // Initialize navigation when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        updateAuthAndNavigation();
+      });
+
+      let currentUser = null;
+
+      // Check authentication and role
+      async function checkAuth() {
+        try {
+          const response = await fetch("/api/user");
+          if (!response.ok) {
+            window.location.href = "/login.html";
+            return;
+          }
+
+          const userData = await response.json();
+          currentUser = userData.user;
+
+          // Check if user is organizer
+          if (currentUser.role !== "organizer") {
+            window.location.href = "/events.html";
+            return;
+          }
+
+          document.getElementById("userWelcome").textContent = currentUser.name;
+          await loadDashboard(); // Add await here
+        } catch (error) {
+          console.error("Auth check failed:", error);
+          window.location.href = "/login.html";
+        }
+      }
+
+      // Load dashboard data
+      // Load dashboard data
+      async function loadDashboard() {
+        try {
+          console.log("🔄 Loading dashboard...");
+
+          const response = await fetch("/api/organizer/dashboard");
+          console.log("📡 API Response status:", response.status);
+
+          if (!response.ok) {
+            const errorText = await response.text();
+            console.error("❌ API Error:", errorText);
+            throw new Error(`API error: ${response.status}`);
+          }
+
+          const data = await response.json();
+          console.log("✅ Dashboard data loaded:", data);
+
+          // Safely update stats with fallback values
+          document.getElementById("totalEvents").textContent =
+            data.stats.total_events || 0;
+          document.getElementById("totalTickets").textContent =
+            data.stats.total_tickets_sold || 0;
+          document.getElementById("totalRevenue").textContent = `₹${(
+            data.stats.total_revenue || 0
+          ).toFixed(2)}`;
+          document.getElementById("avgAttendance").textContent = `${(
+            data.stats.avg_attendance || 0
+          ).toFixed(1)}%`;
+
+          // Load recent bookings
+          loadRecentBookings(data.recentBookings || []);
+
+          // Load upcoming events
+          loadUpcomingEvents(data.upcomingEvents || []);
+
+          // Load all events
+          await loadOrganizerEvents(); // Add await here
+
+          document.getElementById("loadingMessage").style.display = "none";
+          document.getElementById("dashboardContent").style.display = "block";
+        } catch (error) {
+          console.error("Error loading dashboard:", error);
+          document.getElementById("loadingMessage").innerHTML = `
+            <div class="alert alert-danger">
+                <h3>Error Loading Dashboard</h3>
+                <p>${error.message}</p>
+                <p>Please check the browser console for details.</p>
+                <button onclick="loadDashboard()" class="btn btn-primary" style="margin-top: 10px;">Try Again</button>
+            </div>
+        `;
+        }
+      }
+
+      // Load recent bookings
+      function loadRecentBookings(bookings) {
+        const container = document.getElementById("recentBookings");
+
+        if (bookings.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-clipboard-list"></i>
+                <p>No recent bookings</p>
+            </div>
+        `;
+          return;
+        }
+
+        let html = "";
+        bookings.forEach((booking) => {
+          const bookingDate = new Date(
+            booking.booking_date
+          ).toLocaleDateString();
+          html += `
+            <div class="booking-item">
+    <div class="booking-title">${booking.event_title}</div>
+    <div class="booking-details">
+        <i class="fas fa-user"></i> ${booking.user_name || "Guest"} - 
+        <i class="fas fa-ticket-alt"></i> ${booking.tickets} ticket(s) - 
+        ₹${booking.total_amount}
+    </div>
+    <div class="booking-date"><i class="fas fa-calendar"></i> ${bookingDate}</div>
+</div>
+        `;
+        });
+        container.innerHTML = html;
+      }
+
+      // Load upcoming events
+      function loadUpcomingEvents(events) {
+        const container = document.getElementById("upcomingEvents");
+
+        if (events.length === 0) {
+          container.innerHTML = `
+            <div class="empty-state">
+                <i class="fas fa-calendar-alt"></i>
+                <p>No upcoming events</p>
+            </div>
+        `;
+          return;
+        }
+
+        let html = "";
+        events.forEach((event) => {
+          const eventDate = new Date(event.date).toLocaleDateString();
+          const eventTime = new Date(event.date).toLocaleTimeString();
+          html += `
+            <div class="event-item">
+                <div class="event-title">${event.title}</div>
+                <div class="event-details">
+                    <i class="fas fa-calendar"></i> ${eventDate} 
+                    <i class="fas fa-clock"></i> ${eventTime}
+                </div>
+                <div class="event-details">
+                    <i class="fas fa-map-marker-alt"></i> ${event.location}
+                </div>
+                <div class="event-details">
+                    <i class="fas fa-chair"></i> ${event.available_seats}/${event.total_seats} seats available
+                </div>
+            </div>
+        `;
+        });
+        container.innerHTML = html;
+      }
+
+      // Load organizer events
+      // Load organizer events with approval status
+      async function loadOrganizerEvents() {
+        try {
+          const response = await fetch("/api/organizer/events");
+          if (!response.ok) throw new Error("Failed to load events");
+
+          const events = await response.json();
+          const container = document.getElementById("organizerEvents");
+
+          if (events.length === 0) {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i class="fas fa-calendar-plus"></i>
+                    <h4>No Events Created Yet</h4>
+                    <p>Start by creating your first event!</p>
+                    <button onclick="showCreateEventModal()" class="btn btn-primary" style="margin-top: 15px;">
+                        <i class="fas fa-plus"></i> Create Your First Event
+                    </button>
+                </div>
+            `;
+            return;
+          }
+
+          let html = `
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Event</th>
+                            <th>Date</th>
+                            <th>Location</th>
+                            <th>Status</th>
+                            <th>Tickets Sold</th>
+                            <th>Revenue</th>
+                            <th>Occupancy</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+        `;
+
+          events.forEach((event) => {
+            const eventDate = new Date(event.date).toLocaleDateString();
+            const occupancyRate = event.occupancy_rate || 0;
+            const occupancyColor =
+              occupancyRate > 70
+                ? "var(--success)"
+                : occupancyRate > 30
+                ? "var(--warning)"
+                : "var(--danger)";
+
+            // Status badge with colors
+            let statusBadge = "";
+            if (event.status === "approved") {
+              statusBadge = `<span style="background: var(--success); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                    <i class="fas fa-check-circle"></i> Approved
+                </span>`;
+            } else if (event.status === "pending") {
+              statusBadge = `<span style="background: var(--warning); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                    <i class="fas fa-clock"></i> Pending Approval
+                </span>`;
+            } else if (event.status === "rejected") {
+              statusBadge = `<span style="background: var(--danger); color: white; padding: 4px 8px; border-radius: 12px; font-size: 0.8rem; font-weight: 600;">
+                    <i class="fas fa-times-circle"></i> Rejected
+                </span>`;
+            }
+
+            html += `
+                <tr>
+                    <td>
+                        <strong>${event.title}</strong>
+                        <br><small style="color: var(--gray);"><i class="">₹</i> ${
+                          event.price
+                        } per ticket</small>
+                        ${
+                          event.admin_notes
+                            ? `<br><small style="color: var(--gray);"><i class="fas fa-sticky-note"></i> ${event.admin_notes}</small>`
+                            : ""
+                        }
+                    </td>
+                    <td>${eventDate}</td>
+                    <td>${event.location}</td>
+                    <td>${statusBadge}</td>
+                    <td>${event.total_tickets_sold || 0}/${
+              event.total_seats
+            }</td>
+                    <td> ₹${(
+                      event.total_revenue || 0
+                    ).toFixed(2)}</td>
+                    <td>
+                        <span style="color: ${occupancyColor}; font-weight: 600;">
+                            ${occupancyRate}%
+                        </span>
+                    </td>
+                    <td>
+                        ${
+                          event.status === "pending"
+                            ? `
+                            <span style="color: var(--gray); font-size: 0.8rem;">Awaiting Admin Approval</span>
+                        `
+                            : `
+                            <button onclick="editEvent(${event.id})" class="btn btn-outline" style="padding: 4px 8px; font-size: 0.8rem; margin-right: 5px; color: var(--dark); border-color: var(--dark);">
+                                <i class="fas fa-edit"></i> Edit
+                            </button>
+                            <button onclick="deleteEvent(${event.id})" class="btn btn-danger" style="padding: 4px 8px; font-size: 0.8rem;">
+                                <i class="fas fa-trash"></i> Delete
+                            </button>
+                        `
+                        }
+                    </td>
+                </tr>
+            `;
+          });
+
+          html += `
+                    </tbody>
+                </table>
+            </div>
+        `;
+          container.innerHTML = html;
+        } catch (error) {
+          console.error("Error loading organizer events:", error);
+          document.getElementById("organizerEvents").innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Error loading events: ${error.message}
+            </div>
+        `;
+        }
+      }
+      // Logout function - ADD THIS MISSING FUNCTION
+      async function logout() {
+        try {
+          await fetch("/api/logout", { method: "POST" });
+          window.location.href = "/";
+        } catch (error) {
+          console.error("Logout error:", error);
+          window.location.href = "/";
+        }
+      }
+
+      // Show specific section
+      function showSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll(".dashboard-section").forEach((section) => {
+          section.style.display = "none";
+        });
+
+        // Show selected section
+        document.getElementById(sectionId).style.display = "block";
+
+        // Update active menu item
+        document.querySelectorAll(".sidebar-menu a").forEach((link) => {
+          link.classList.remove("active");
+        });
+        event.target.classList.add("active");
+      }
+
+      // Create event modal functions
+      function showCreateEventModal() {
+        document.getElementById("createEventModal").style.display = "flex";
+
+        // Set minimum date to tomorrow for the date input
+        const today = new Date();
+        const tomorrow = new Date(today);
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        // Format as YYYY-MM-DD for date input
+        const minDate = tomorrow.toISOString().split("T")[0];
+        document.getElementById("eventDateInput").min = minDate;
+
+        // Set default date to tomorrow
+        document.getElementById("eventDateInput").value = minDate;
+
+        // Set default time to 18:00
+        document.getElementById("eventTimeInput").value = "18:00";
+
+        // Clear any previous messages
+        document.getElementById("createEventMessage").innerHTML = "";
+      }
+
+      function hideCreateEventModal() {
+        document.getElementById("createEventModal").style.display = "none";
+        document.getElementById("createEventForm").reset();
+        document.getElementById("createEventMessage").innerHTML = "";
+      }
+
+      // Edit event function
+      function editEvent(eventId) {
+        alert(
+          "Edit functionality for event " +
+            eventId +
+            " would open here. For now, you can delete and recreate the event."
+        );
+      }
+
+      // Delete event function
+      async function deleteEvent(eventId) {
+        if (
+          !confirm(
+            "Are you sure you want to delete this event? This action cannot be undone."
+          )
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`/api/events/${eventId}`, {
+            method: "DELETE",
+          });
+
+          const result = await response.json();
+
+          if (response.ok) {
+            alert("Event deleted successfully!");
+            loadDashboard(); // Refresh the dashboard
+          } else {
+            alert("Error: " + result.error);
+          }
+        } catch (error) {
+          console.error("Error deleting event:", error);
+          alert("An error occurred while deleting the event");
+        }
+      }
+
+      // Initialize dashboard when page loads
+      document.addEventListener("DOMContentLoaded", function () {
+        checkAuth();
+      });
+      // Create event form submission - ADD THIS CODE
+      // In the event creation form submission, replace the date handling section:
+      document
+        .getElementById("createEventForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
+
+          const submitButton = this.querySelector('button[type="submit"]');
+          const originalText = submitButton.innerHTML;
+
+          // Show loading state
+          submitButton.innerHTML =
+            '<span class="loading"></span> Creating Event...';
+          submitButton.disabled = true;
+
+          console.log("🔄 Starting event creation...");
+
+          const formData = new FormData(this);
+
+          // Get date and time separately
+          const eventDate = formData.get("eventDate");
+          const eventTime = formData.get("eventTime");
+
+          console.log("📅 Raw form data:", {
+            eventDate,
+            eventTime,
+            title: formData.get("title"),
+            location: formData.get("location"),
+          });
+
+          // Combine date and time into MySQL datetime format (YYYY-MM-DD HH:MM:SS)
+          let mysqlDateTime;
+          try {
+            // Create date object from date and time
+            const [year, month, day] = eventDate.split("-");
+            const [hours, minutes] = eventTime.split(":");
+
+            const dateObj = new Date(year, month - 1, day, hours, minutes);
+            console.log("📅 Combined date object:", dateObj);
+
+            // Convert to MySQL datetime format: YYYY-MM-DD HH:MM:SS
+            mysqlDateTime = `${eventDate} ${eventTime}:00`;
+            console.log("📅 MySQL datetime format:", mysqlDateTime);
+
+            // Validate the date
+            if (isNaN(dateObj.getTime())) {
+              throw new Error("Invalid date format");
+            }
+
+            // Validate date is in the future
+            const now = new Date();
+            if (dateObj <= now) {
+              throw new Error("Event date must be in the future");
+            }
+          } catch (error) {
+            console.error("❌ Date validation error:", error);
+            document.getElementById("createEventMessage").innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Error: ${error.message}
+            </div>
+        `;
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+            return;
+          }
+
+          const data = {
+            title: formData.get("title"),
+            description: formData.get("description"),
+            date: mysqlDateTime, // Use MySQL format instead of ISO string
+            location: formData.get("location"),
+            price: parseFloat(formData.get("price")),
+            total_seats: parseInt(formData.get("total_seats")),
+            image_url: formData.get("image_url") || "",
+          };
+
+          console.log("📤 Sending data to server:", data);
+
+          // Validate required fields
+          if (
+            !data.title ||
+            !data.description ||
+            !data.location ||
+            isNaN(data.price) ||
+            isNaN(data.total_seats)
+          ) {
+            console.error("❌ Validation failed:", data);
+            document.getElementById("createEventMessage").innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Error: Please fill in all required fields correctly
+            </div>
+        `;
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+            return;
+          }
+
+          try {
+            console.log("📡 Sending request to /api/events...");
+            const response = await fetch("/api/events", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(data),
+            });
+
+            console.log("📥 Response status:", response.status);
+            const result = await response.json();
+            console.log("📥 Server response:", result);
+
+            if (response.ok) {
+              console.log("✅ Event created successfully!");
+              document.getElementById("createEventMessage").innerHTML = `
+        <div class="alert alert-success">
+            <i class="fas fa-check-circle"></i> 🎉 Event created successfully! 
+            <strong>It is now pending admin approval</strong> and will be visible to users once approved.
+        </div>
+    `;
+
+              // Reset form and close modal after success
+              setTimeout(() => {
+                hideCreateEventModal();
+                console.log("🔄 Refreshing dashboard...");
+                loadDashboard(); // Refresh the dashboard
+              }, 2000);
+            } else {
+              console.error("❌ Server error:", result);
+              document.getElementById("createEventMessage").innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="fas fa-exclamation-triangle"></i> Error: ${
+                      result.error || "Failed to create event"
+                    }
+                </div>
+            `;
+              submitButton.innerHTML = originalText;
+              submitButton.disabled = false;
+            }
+          } catch (error) {
+            console.error("❌ Network error:", error);
+            document.getElementById("createEventMessage").innerHTML = `
+            <div class="alert alert-danger">
+                <i class="fas fa-exclamation-triangle"></i> Network error: Failed to create event. Please check your connection and try again.
+            </div>
+        `;
+            submitButton.innerHTML = originalText;
+            submitButton.disabled = false;
+          }
+        });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard - EventHub</title>
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+
+<body>
+    <header>
+        <div class="container header-content">
+            <div class="logo">EventHub</div>
+            <ul class="nav-menu">
+                <li><a href="/">Home</a></li>
+                <li><a href="/events.html">Events</a></li>
+                <!-- <li><a href="/organizer-dashboard.html" id="navThirdLink">Dashboard</a></li> -->
+            </ul>
+            <div class="auth-buttons">
+                <span id="userWelcome" style="color: white; margin-right: 15px;"></span>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            </div>
+        </div>
+    </header>
+
+    <section class="container">
+        <h2 class="section-title">Organizer Dashboard</h2>
+        <div class="dashboard">
+            <div class="sidebar">
+                <ul class="sidebar-menu">
+                    <li><a href="#" class="active" onclick="showSection('myEvents')">My Events</a></li>
+                    <li><a href="#" onclick="showSection('createEvent')">Create Event</a></li>
+                    <li><a href="#" onclick="showSection('myBookings')">My Bookings</a></li>
+                    <li><a href="#" onclick="showSection('analytics')">Analytics</a></li>
+                </ul>
+            </div>
+            <div class="dashboard-content">
+                <div id="messageContainer"></div>
+
+                <!-- My Events Section -->
+                <div id="myEvents" class="dashboard-section">
+                    <h3>My Events</h3>
+                    <div id="eventsList">
+                        <!-- Events will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Create Event Section -->
+                <div id="createEvent" class="dashboard-section" style="display: none;">
+                    <h3>Create New Event</h3>
+                    <form id="createEventForm">
+                        <div class="form-group">
+                            <label class="form-label" for="eventTitle">Event Title</label>
+                            <input type="text" class="form-control" id="eventTitle" name="title" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="eventDescription">Description</label>
+                            <textarea class="form-control" id="eventDescription" name="description" rows="4"
+                                required></textarea>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="eventDate">Date & Time</label>
+                            <input type="datetime-local" class="form-control" id="eventDate" name="date" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="eventLocation">Location</label>
+                            <input type="text" class="form-control" id="eventLocation" name="location" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="eventPrice">Price (₹)</label>
+                            <input type="number" class="form-control" id="eventPrice" name="price" min="0" step="0.01"
+                                required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label" for="eventSeats">Total Seats</label>
+                            <input type="number" class="form-control" id="eventSeats" name="total_seats" min="1"
+                                required>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Event</button>
+                    </form>
+                </div>
+
+                <!-- My Bookings Section -->
+                <div id="myBookings" class="dashboard-section" style="display: none;">
+                    <h3>My Bookings</h3>
+                    <div id="bookingsList">
+                        <!-- Bookings will be loaded here -->
+                    </div>
+                </div>
+
+                <!-- Analytics Section -->
+                <div id="analytics" class="dashboard-section" style="display: none;">
+                    <h3>Analytics</h3>
+                    <div id="analyticsContent">
+                        <!-- Analytics will be loaded here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <div class="simple-footer">
+        <p>&copy; 2025 EventHub. All rights reserved.</p>
+    </div>
+
+    <script>
+        // Update auth buttons and navigation based on user role
+        // Update auth buttons and navigation based on user role
+async function updateAuthAndNavigation() {
+    try {
+        const response = await fetch('/api/user-info');
+        if (!response.ok) {
+            throw new Error('Failed to fetch user info');
+        }
+        
+        const userInfo = await response.json();
+        console.log('User info:', userInfo); // Debug log
+
+        const authButtons = document.getElementById('authButtons');
+        const navThirdLink = document.getElementById('navThirdLink');
+        const adminLink = document.getElementById('adminLink');
+
+        if (userInfo.loggedIn) {
+            console.log('User is logged in with role:', userInfo.user.role); // Debug log
+            
+            // Update navigation based on role
+            if (userInfo.user.role === 'organizer') {
+                navThirdLink.textContent = 'Dashboard';
+                navThirdLink.href = '/organizer-dashboard.html';
+            } else if (userInfo.user.role === 'admin') {
+                navThirdLink.textContent = 'Admin';
+                navThirdLink.href = '/admin-dashboard.html';
+            } else {
+                navThirdLink.textContent = 'My Bookings';
+                navThirdLink.href = '/my-bookings.html';
+            }
+
+            // Show admin link only for admin users
+            if (userInfo.user.role === 'admin') {
+                adminLink.style.display = 'block';
+                console.log('Admin link shown'); // Debug log
+            } else {
+                adminLink.style.display = 'none';
+            }
+
+            // Update auth buttons
+            authButtons.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <span class="welcome-text">
+                        <i class="fas fa-user-circle"></i> Welcome, ${userInfo.user.name}
+                    </span>
+                    <button class="btn btn-outline" onclick="logout()">
+                        <i class="fas fa-sign-out-alt"></i> Logout
+                    </button>
+                </div>
+            `;
+        } else {
+            console.log('User not logged in'); // Debug log
+            navThirdLink.textContent = 'My Bookings';
+            navThirdLink.href = '/my-bookings.html';
+            if (adminLink) adminLink.style.display = 'none';
+
+            authButtons.innerHTML = `
+                <div style="display: flex; gap: 10px;">
+                    <a href="/login.html" class="btn btn-outline">
+                        <i class="fas fa-sign-in-alt"></i> Login
+                    </a>
+                    <a href="/register.html" class="btn btn-primary">
+                        <i class="fas fa-user-plus"></i> Register
+                    </a>
+                </div>
+            `;
+        }
+    } catch (error) {
+        console.error('Error checking login status:', error);
+        // Fallback for when API fails
+        const authButtons = document.getElementById('authButtons');
+        authButtons.innerHTML = `
+            <div style="display: flex; gap: 10px;">
+                <a href="/login.html" class="btn btn-outline">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </a>
+                <a href="/register.html" class="btn btn-primary">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+            </div>
+        `;
+    }
+}
+
+// Logout function
+async function logout() {
+    try {
+        await fetch('/api/logout', { method: 'POST' });
+        window.location.href = '/';
+    } catch (error) {
+        console.error('Logout error:', error);
+        window.location.href = '/';
+    }
+}
+
+// Initialize navigation when page loads
+document.addEventListener('DOMContentLoaded', function() {
+    updateAuthAndNavigation();
+});
+            try {
+                const response = await fetch('/api/user-info');
+                const userInfo = await response.json();
+
+                const authButtons = document.getElementById('authButtons');
+                const navThirdLink = document.getElementById('navThirdLink');
+                const adminLink = document.getElementById('adminLink');
+
+                if (userInfo.loggedIn) {
+                    // Update navigation based on role
+                    if (userInfo.user.role === 'organizer') {
+                        navThirdLink.textContent = 'Dashboard';
+                        navThirdLink.href = '/organizer-dashboard.html';
+                    } else {
+                        navThirdLink.textContent = 'My Bookings';
+                        navThirdLink.href = '/my-bookings.html';
+                    }
+
+                    // Show admin link only for admin users
+                    if (userInfo.user.role === 'admin') {
+                        adminLink.style.display = 'block';
+                    } else {
+                        adminLink.style.display = 'none';
+                    }
+
+                    authButtons.innerHTML = `
+                <span style="color: white; margin-right: 15px;">Welcome, ${userInfo.user.name}</span>
+                <button class="btn btn-outline" onclick="logout()">Logout</button>
+            `;
+                } else {
+                    navThirdLink.textContent = 'My Bookings';
+                    navThirdLink.href = '/my-bookings.html';
+                    adminLink.style.display = 'none';
+
+                    authButtons.innerHTML = `
+                <a href="/login.html" class="btn btn-outline">Login</a>
+                <a href="/register.html" class="btn btn-primary">Register</a>
+            `;
+                }
+            } catch (error) {
+                console.error('Error checking login status:', error);
+            }
+        
+        // Show specific section
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.dashboard-section').forEach(section => {
+                section.style.display = 'none';
+            });
+
+            // Show selected section
+            document.getElementById(sectionId).style.display = 'block';
+
+            // Update active menu item
+            document.querySelectorAll('.sidebar-menu a').forEach(link => {
+                link.classList.remove('active');
+            });
+            event.target.classList.add('active');
+        }
+
+        // Load organizer events
+        async function loadMyEvents() {
+            try {
+                const response = await fetch('/api/organizer/events');
+                const events = await response.json();
+
+                const eventsList = document.getElementById('eventsList');
+
+                if (events.length === 0) {
+                    eventsList.innerHTML = '<p>No events created yet.</p>';
+                    return;
+                }
+
+                let html = '<table class="table"><thead><tr><th>Title</th><th>Date</th><th>Location</th><th>Tickets Sold</th><th>Revenue</th></tr></thead><tbody>';
+
+                events.forEach(event => {
+                    const eventDate = new Date(event.date).toLocaleDateString();
+                    html += `
+                        <tr>
+                            <td>${event.title}</td>
+                            <td>${eventDate}</td>
+                            <td>${event.location}</td>
+                            <td>${event.total_tickets_sold || 0}</td>
+                            <td>₹${(event.total_revenue || 0).toFixed(2)}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+                eventsList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading events:', error);
+            }
+        }
+
+        // Load user bookings
+        async function loadMyBookings() {
+            try {
+                const response = await fetch('/api/my-bookings');
+                const bookings = await response.json();
+
+                const bookingsList = document.getElementById('bookingsList');
+
+                if (bookings.length === 0) {
+                    bookingsList.innerHTML = '<p>No bookings found.</p>';
+                    return;
+                }
+
+                let html = '<table class="table"><thead><tr><th>Event</th><th>Date</th><th>Tickets</th><th>Amount</th><th>Status</th></tr></thead><tbody>';
+
+                bookings.forEach(booking => {
+                    const bookingDate = new Date(booking.booking_date).toLocaleDateString();
+                    html += `
+                        <tr>
+                            <td>${booking.event_title}</td>
+                            <td>${bookingDate}</td>
+                            <td>${booking.tickets}</td>
+                            <td>₹${booking.total_amount}</td>
+                            <td>${booking.status}</td>
+                        </tr>
+                    `;
+                });
+
+                html += '</tbody></table>';
+                bookingsList.innerHTML = html;
+            } catch (error) {
+                console.error('Error loading bookings:', error);
+            }
+        }
+
+        // Create event form submission
+        document.getElementById('createEventForm').addEventListener('submit', async function (e) {
+            e.preventDefault();
+
+            const formData = new FormData(this);
+            const data = {
+                title: formData.get('title'),
+                description: formData.get('description'),
+                date: formData.get('date'),
+                location: formData.get('location'),
+                price: parseFloat(formData.get('price')),
+                total_seats: parseInt(formData.get('total_seats'))
+            };
+
+            try {
+                const response = await fetch('/api/events', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(data)
+                });
+
+                const result = await response.json();
+
+                if (response.ok) {
+                    showMessage('Event created successfully!', 'success');
+                    this.reset();
+                    loadMyEvents(); // Refresh events list
+                } else {
+                    showMessage(result.error, 'error');
+                }
+            } catch (error) {
+                console.error('Error creating event:', error);
+                showMessage('An error occurred while creating event', 'error');
+            }
+        });
+
+        // Logout function
+        async function logout() {
+            try {
+                await fetch('/api/logout', { method: 'POST' });
+                window.location.href = '/login.html';
+            } catch (error) {
+                console.error('Logout error:', error);
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageContainer = document.getElementById('messageContainer');
+            messageContainer.innerHTML = `
+                <div class="alert alert-${type}">
+                    ${message}
+                </div>
+            `;
+
+            // Auto-hide success messages after 3 seconds
+            if (type === 'success') {
+                setTimeout(() => {
+                    messageContainer.innerHTML = '';
+                }, 3000);
+            }
+        }
+
+        // Initialize dashboard
+        checkAuth();
+    </script>
+</body>
+
+</html>
