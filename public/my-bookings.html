@@ -94,7 +94,7 @@
                         </div>
                     `;
                 } else {
-                    // Display bookings in a card layout instead of table
+                    // Display bookings in a card layout 
                     let html = `
                         <div class="bookings-stats" style="text-align: center; margin-bottom: 40px; padding: 30px; background: white; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-left: 4px solid var(--primary);">
                             <h3 style="color: var(--dark); margin-bottom: 25px; display: flex; align-items: center; justify-content: center; gap: 10px;">
@@ -205,7 +205,6 @@
             }
         }
 
-        // Get appropriate default image based on event type (fallback only)
         function getDefaultEventImage(title) {
             const lowerTitle = title.toLowerCase();
             if (lowerTitle.includes('tech') || lowerTitle.includes('conference')) {
