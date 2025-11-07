@@ -4,11 +4,11 @@ async function testDB() {
     const connection = await mysql.createConnection({
         host: 'localhost',
         user: 'root',
-        password: '12345',  // Updated with your password
+        password: '12345',  
         database: 'online_events'
     });
 
-    console.log('✅ Database connected successfully!');
+    console.log('Database connected successfully!');
     console.log('Checking tables...');
     
     const [tables] = await connection.execute('SHOW TABLES');
