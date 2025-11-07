@@ -1,10 +1,10 @@
 // /js/auth.js
-console.log('🔐 Auth.js loaded');
+console.log('Auth.js loaded');
 
 // Global authentication functions
 async function updateAuthUI() {
     try {
-        console.log('🔄 Updating auth UI...');
+        console.log('Updating auth UI...');
         const response = await fetch('/api/user-info');
         
         if (!response.ok) {
@@ -12,7 +12,7 @@ async function updateAuthUI() {
         }
 
         const userInfo = await response.json();
-        console.log('👤 User info:', userInfo);
+        console.log('User info:', userInfo);
 
         updateAuthButtons(userInfo);
         updateNavigation(userInfo);
@@ -20,7 +20,7 @@ async function updateAuthUI() {
         return userInfo;
 
     } catch (error) {
-        console.error('❌ Error checking auth status:', error);
+        console.error('Error checking auth status:', error);
         setLoggedOutState();
         return { loggedIn: false };
     }
@@ -29,12 +29,12 @@ async function updateAuthUI() {
 function updateAuthButtons(userInfo) {
     const authButtons = document.getElementById('authButtons');
     if (!authButtons) {
-        console.log('❌ authButtons element not found');
+        console.log('authButtons element not found');
         return;
     }
 
     if (userInfo.loggedIn) {
-        console.log('✅ User logged in, showing logout button');
+        console.log('User logged in, showing logout button');
         authButtons.innerHTML = `
             <div style="display: flex; align-items: center; gap: 15px;">
                 <span class="welcome-text">
@@ -46,7 +46,7 @@ function updateAuthButtons(userInfo) {
             </div>
         `;
     } else {
-        console.log('❌ User not logged in, showing login/register buttons');
+        console.log('User not logged in, showing login/register buttons');
         authButtons.innerHTML = `
             <div style="display: flex; gap: 10px;">
                 <a href="/login.html" class="btn btn-outline">
@@ -65,7 +65,7 @@ function updateNavigation(userInfo) {
     const adminLink = document.getElementById('adminLink');
 
     if (userInfo.loggedIn) {
-        console.log('🔄 Updating navigation for role:', userInfo.user.role);
+        console.log('Updating navigation for role:', userInfo.user.role);
         
         if (userInfo.user.role === 'organizer') {
             if (navThirdLink) {
@@ -88,7 +88,7 @@ function updateNavigation(userInfo) {
             adminLink.style.display = userInfo.user.role === 'admin' ? 'block' : 'none';
         }
     } else {
-        console.log('🔄 Setting default navigation for logged out user');
+        console.log('Setting default navigation for logged out user');
         if (navThirdLink) {
             navThirdLink.textContent = 'My Bookings';
             navThirdLink.href = '/my-bookings.html';
@@ -100,7 +100,7 @@ function updateNavigation(userInfo) {
 }
 
 function setLoggedOutState() {
-    console.log('🔒 Setting logged out state');
+    console.log('Setting logged out state');
     const authButtons = document.getElementById('authButtons');
     const navThirdLink = document.getElementById('navThirdLink');
     const adminLink = document.getElementById('adminLink');
@@ -156,7 +156,7 @@ async function logout() {
 }
 
 function showMessage(message, type = 'info') {
-    console.log(`📢 ${type.toUpperCase()}: ${message}`);
+    console.log(`${type.toUpperCase()}: ${message}`);
     
     let messageContainer = document.getElementById('messageContainer');
     if (!messageContainer) {
