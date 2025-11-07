@@ -39,7 +39,7 @@ async function initializeDatabase() {
         
         // Test the connection
         const connection = await pool.getConnection();
-        console.log('✅ Database connected successfully');
+        console.log('Database connected successfully');
         
         // Initialize tables if they don't exist
         await initializeDatabaseAndTables(connection);
@@ -48,7 +48,7 @@ async function initializeDatabase() {
         return true;
         
     } catch (error) {
-        console.error('❌ Database connection failed:', error.message);
+        console.error('Database connection failed:', error.message);
         return false;
     }
 }
@@ -105,7 +105,7 @@ async function initializeDatabaseAndTables(connection) {
             )
         `);
 
-        console.log('✅ Database tables initialized successfully');
+        console.log('Database tables initialized successfully');
 
         // Insert sample data if tables are empty
         await insertSampleData(connection);
@@ -123,7 +123,7 @@ async function insertSampleData(connection) {
         const [users] = await connection.execute('SELECT COUNT(*) as count FROM users');
         
         if (users[0].count === 0) {
-            console.log('📥 Inserting sample data...');
+            console.log('Inserting sample data...');
             
             // Insert sample users
             const hashedPassword = await bcrypt.hash('password123', 10);
@@ -186,10 +186,10 @@ async function insertSampleData(connection) {
                 );
             }
 
-            console.log('✅ Sample data inserted successfully');
-            console.log('👤 Demo accounts created with password: password123');
+            console.log('Sample data inserted successfully');
+            console.log('Demo accounts created with password: password123');
         } else {
-            console.log('✅ Database already contains data');
+            console.log('Database already contains data');
         }
     } catch (error) {
         console.error('Error inserting sample data:', error);
@@ -555,7 +555,7 @@ app.get('/api/all-bookings', async (req, res) => {
     }
 });
 
-// Organizer Dashboard Routes
+
 
 // Get organizer dashboard data
 app.get('/api/organizer/dashboard', requireOrganizer, async (req, res) => {
@@ -831,9 +831,9 @@ app.get('/api/health', async (req, res) => {
 
 // Start server
 app.listen(PORT, async () => {
-    console.log(`🚀 Server running on http://localhost:${PORT}`);
-    console.log('📊 Testing database connection...');
+    console.log(`Server running on http://localhost:${PORT}`);
+    console.log('Testing database connection...');
     await initializeDatabase();
-    console.log(`💡 Health check: http://localhost:${PORT}/api/health`);
-    console.log(`💡 Debug info: http://localhost:${PORT}/api/debug`);
+    console.log(`Health check: http://localhost:${PORT}/api/health`);
+    console.log(`Debug info: http://localhost:${PORT}/api/debug`);
 });
