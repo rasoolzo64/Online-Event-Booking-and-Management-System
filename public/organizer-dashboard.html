@@ -74,9 +74,6 @@
         gap: 10px;
       }
 
-      .logo::before {
-        content: "🎪";
-      }
 
       .nav-menu {
         display: flex;
@@ -674,7 +671,7 @@
         <div class="auth-buttons">
           <div style="display: flex; align-items: center; gap: 15px">
             <span class="welcome-text">
-              👋 Welcome, <span id="userWelcome">Organizer</span>
+              Welcome, <span id="userWelcome">Organizer</span>
             </span>
             <button class="btn btn-outline" onclick="logout()">
               <i class="fas fa-sign-out-alt"></i> Logout
@@ -760,7 +757,6 @@
           </div>
         </div>
 
-        <!-- All Events Table -->
         <!-- All Events Table -->
         <div class="events-section">
           <div class="events-header">
@@ -938,14 +934,14 @@
           }
 
           const userInfo = await response.json();
-          console.log("User info:", userInfo); // Debug log
+          console.log("User info:", userInfo); 
 
           const authButtons = document.getElementById("authButtons");
           const navThirdLink = document.getElementById("navThirdLink");
           const adminLink = document.getElementById("adminLink");
 
           if (userInfo.loggedIn) {
-            console.log("User is logged in with role:", userInfo.user.role); // Debug log
+            console.log("User is logged in with role:", userInfo.user.role); 
 
             // Update navigation based on role
             if (userInfo.user.role === "organizer") {
@@ -962,7 +958,7 @@
             // Show admin link only for admin users
             if (userInfo.user.role === "admin") {
               adminLink.style.display = "block";
-              console.log("Admin link shown"); // Debug log
+              console.log("Admin link shown"); 
             } else {
               adminLink.style.display = "none";
             }
@@ -979,7 +975,7 @@
                 </div>
             `;
           } else {
-            console.log("User not logged in"); // Debug log
+            console.log("User not logged in"); 
             navThirdLink.textContent = "My Bookings";
             navThirdLink.href = "/my-bookings.html";
             if (adminLink) adminLink.style.display = "none";
@@ -1049,7 +1045,7 @@
           }
 
           document.getElementById("userWelcome").textContent = currentUser.name;
-          await loadDashboard(); // Add await here
+          await loadDashboard(); 
         } catch (error) {
           console.error("Auth check failed:", error);
           window.location.href = "/login.html";
@@ -1057,22 +1053,21 @@
       }
 
       // Load dashboard data
-      // Load dashboard data
       async function loadDashboard() {
         try {
-          console.log("🔄 Loading dashboard...");
+          console.log("Loading dashboard...");
 
           const response = await fetch("/api/organizer/dashboard");
-          console.log("📡 API Response status:", response.status);
+          console.log("API Response status:", response.status);
 
           if (!response.ok) {
             const errorText = await response.text();
-            console.error("❌ API Error:", errorText);
+            console.error("API Error:", errorText);
             throw new Error(`API error: ${response.status}`);
           }
 
           const data = await response.json();
-          console.log("✅ Dashboard data loaded:", data);
+          console.log("Dashboard data loaded:", data);
 
           // Safely update stats with fallback values
           document.getElementById("totalEvents").textContent =
@@ -1181,7 +1176,6 @@
         container.innerHTML = html;
       }
 
-      // Load organizer events
       // Load organizer events with approval status
       async function loadOrganizerEvents() {
         try {
@@ -1352,10 +1346,10 @@
         const minDate = tomorrow.toISOString().split("T")[0];
         document.getElementById("eventDateInput").min = minDate;
 
-        // Set default date to tomorrow
+        // default date to tomorrow
         document.getElementById("eventDateInput").value = minDate;
 
-        // Set default time to 18:00
+        // default time to 18:00
         document.getElementById("eventTimeInput").value = "18:00";
 
         // Clear any previous messages
@@ -1396,7 +1390,7 @@
 
           if (response.ok) {
             alert("Event deleted successfully!");
-            loadDashboard(); // Refresh the dashboard
+            loadDashboard(); 
           } else {
             alert("Error: " + result.error);
           }
@@ -1410,8 +1404,6 @@
       document.addEventListener("DOMContentLoaded", function () {
         checkAuth();
       });
-      // Create event form submission - ADD THIS CODE
-      // In the event creation form submission, replace the date handling section:
       document
         .getElementById("createEventForm")
         .addEventListener("submit", async function (e) {
@@ -1425,7 +1417,7 @@
             '<span class="loading"></span> Creating Event...';
           submitButton.disabled = true;
 
-          console.log("🔄 Starting event creation...");
+          console.log("Starting event creation...");
 
           const formData = new FormData(this);
 
@@ -1433,14 +1425,13 @@
           const eventDate = formData.get("eventDate");
           const eventTime = formData.get("eventTime");
 
-          console.log("📅 Raw form data:", {
+          console.log("Raw form data:", {
             eventDate,
             eventTime,
             title: formData.get("title"),
             location: formData.get("location"),
           });
 
-          // Combine date and time into MySQL datetime format (YYYY-MM-DD HH:MM:SS)
           let mysqlDateTime;
           try {
             // Create date object from date and time
@@ -1448,11 +1439,11 @@
             const [hours, minutes] = eventTime.split(":");
 
             const dateObj = new Date(year, month - 1, day, hours, minutes);
-            console.log("📅 Combined date object:", dateObj);
+            console.log("Combined date object:", dateObj);
 
             // Convert to MySQL datetime format: YYYY-MM-DD HH:MM:SS
             mysqlDateTime = `${eventDate} ${eventTime}:00`;
-            console.log("📅 MySQL datetime format:", mysqlDateTime);
+            console.log("MySQL datetime format:", mysqlDateTime);
 
             // Validate the date
             if (isNaN(dateObj.getTime())) {
@@ -1465,7 +1456,7 @@
               throw new Error("Event date must be in the future");
             }
           } catch (error) {
-            console.error("❌ Date validation error:", error);
+            console.error("Date validation error:", error);
             document.getElementById("createEventMessage").innerHTML = `
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-triangle"></i> Error: ${error.message}
@@ -1486,7 +1477,7 @@
             image_url: formData.get("image_url") || "",
           };
 
-          console.log("📤 Sending data to server:", data);
+          console.log("Sending data to server:", data);
 
           // Validate required fields
           if (
@@ -1496,7 +1487,7 @@
             isNaN(data.price) ||
             isNaN(data.total_seats)
           ) {
-            console.error("❌ Validation failed:", data);
+            console.error("Validation failed:", data);
             document.getElementById("createEventMessage").innerHTML = `
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-triangle"></i> Error: Please fill in all required fields correctly
@@ -1508,7 +1499,7 @@
           }
 
           try {
-            console.log("📡 Sending request to /api/events...");
+            console.log("Sending request to /api/events...");
             const response = await fetch("/api/events", {
               method: "POST",
               headers: {
@@ -1517,15 +1508,15 @@
               body: JSON.stringify(data),
             });
 
-            console.log("📥 Response status:", response.status);
+            console.log("Response status:", response.status);
             const result = await response.json();
-            console.log("📥 Server response:", result);
+            console.log("Server response:", result);
 
             if (response.ok) {
-              console.log("✅ Event created successfully!");
+              console.log("Event created successfully!");
               document.getElementById("createEventMessage").innerHTML = `
         <div class="alert alert-success">
-            <i class="fas fa-check-circle"></i> 🎉 Event created successfully! 
+            <i class="fas fa-check-circle"></i> Event created successfully! 
             <strong>It is now pending admin approval</strong> and will be visible to users once approved.
         </div>
     `;
@@ -1533,11 +1524,11 @@
               // Reset form and close modal after success
               setTimeout(() => {
                 hideCreateEventModal();
-                console.log("🔄 Refreshing dashboard...");
+                console.log("Refreshing dashboard...");
                 loadDashboard(); // Refresh the dashboard
               }, 2000);
             } else {
-              console.error("❌ Server error:", result);
+              console.error("Server error:", result);
               document.getElementById("createEventMessage").innerHTML = `
                 <div class="alert alert-danger">
                     <i class="fas fa-exclamation-triangle"></i> Error: ${
@@ -1549,7 +1540,7 @@
               submitButton.disabled = false;
             }
           } catch (error) {
-            console.error("❌ Network error:", error);
+            console.error("Network error:", error);
             document.getElementById("createEventMessage").innerHTML = `
             <div class="alert alert-danger">
                 <i class="fas fa-exclamation-triangle"></i> Network error: Failed to create event. Please check your connection and try again.
