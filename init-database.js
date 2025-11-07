@@ -4,7 +4,7 @@ async function fixedSetup() {
     let connection;
     
     try {
-        console.log('🔧 Starting fixed database setup...');
+        console.log('Starting fixed database setup...');
         
         // Step 1: Connect without database first (using regular mysql2, not promise)
         connection = mysql.createConnection({
@@ -16,36 +16,36 @@ async function fixedSetup() {
         // Connect using callback style
         connection.connect((err) => {
             if (err) {
-                console.error('❌ Connection failed:', err.message);
+                console.error('Connection failed:', err.message);
                 return;
             }
             
-            console.log('✅ Connected to MySQL server');
+            console.log('Connected to MySQL server');
             
             // Step 2: Create database
             connection.query('CREATE DATABASE IF NOT EXISTS online_events', (err) => {
                 if (err) {
-                    console.error('❌ Database creation failed:', err.message);
+                    console.error('Database creation failed:', err.message);
                     return;
                 }
                 
-                console.log('✅ Database created: online_events');
+                console.log('Database created: online_events');
                 
                 // Step 3: Switch to database
                 connection.query('USE online_events', (err) => {
                     if (err) {
-                        console.error('❌ USE database failed:', err.message);
+                        console.error('USE database failed:', err.message);
                         return;
                     }
                     
-                    console.log('✅ Using database: online_events');
+                    console.log('Using database: online_events');
                     createTables();
                 });
             });
         });
 
         function createTables() {
-            console.log('📊 Creating tables...');
+            console.log('Creating tables...');
             
             // Users table
             connection.query(`
@@ -59,10 +59,10 @@ async function fixedSetup() {
                 )
             `, (err) => {
                 if (err) {
-                    console.error('❌ Users table failed:', err.message);
+                    console.error('Users table failed:', err.message);
                     return;
                 }
-                console.log('✅ Users table created');
+                console.log('Users table created');
                 createEventsTable();
             });
         }
@@ -86,10 +86,10 @@ async function fixedSetup() {
                 )
             `, (err) => {
                 if (err) {
-                    console.error('❌ Events table failed:', err.message);
+                    console.error('Events table failed:', err.message);
                     return;
                 }
-                console.log('✅ Events table created');
+                console.log('Events table created');
                 createBookingsTable();
             });
         }
@@ -112,28 +112,28 @@ async function fixedSetup() {
                 )
             `, (err) => {
                 if (err) {
-                    console.error('❌ Bookings table failed:', err.message);
+                    console.error('Bookings table failed:', err.message);
                     return;
                 }
-                console.log('✅ Bookings table created');
-                console.log('🎉 All tables created successfully!');
+                console.log('Bookings table created');
+                console.log('All tables created successfully!');
                 insertSampleData();
             });
         }
 
         function insertSampleData() {
-            console.log('📥 Checking for sample data...');
+            console.log('Checking for sample data...');
             
             // Check if users already exist
             connection.query('SELECT COUNT(*) as count FROM users', (err, results) => {
                 if (err) {
-                    console.error('❌ Check users failed:', err.message);
+                    console.error('Check users failed:', err.message);
                     connection.end();
                     return;
                 }
                 
                 if (results[0].count === 0) {
-                    console.log('📥 Inserting sample data...');
+                    console.log('Inserting sample data...');
                     
                     // Insert sample users (using bcryptjs synchronously for simplicity)
                     const bcrypt = require('bcryptjs');
@@ -153,7 +153,7 @@ async function fixedSetup() {
                             user,
                             (err, result) => {
                                 if (err) {
-                                    console.error('❌ User insert failed:', err.message);
+                                    console.error('User insert failed:', err.message);
                                     return;
                                 }
                                 
@@ -166,14 +166,14 @@ async function fixedSetup() {
                                 }
                                 
                                 if (usersInserted === users.length) {
-                                    console.log('✅ Sample users inserted');
+                                    console.log('Sample users inserted');
                                 }
                             }
                         );
                     });
                     
                 } else {
-                    console.log('✅ Database already contains data');
+                    console.log('Database already contains data');
                     connection.end();
                 }
             });
@@ -215,17 +215,17 @@ async function fixedSetup() {
                     event,
                     (err) => {
                         if (err) {
-                            console.error('❌ Event insert failed:', err.message);
+                            console.error('Event insert failed:', err.message);
                             return;
                         }
                         
                         eventsInserted++;
                         if (eventsInserted === sampleEvents.length) {
-                            console.log('✅ Sample events inserted');
-                            console.log('🎉 Database setup completed successfully!');
-                            console.log('\n📋 Demo Accounts:');
-                            console.log('👤 User: john@example.com / password123');
-                            console.log('👤 Organizer: organizer@example.com / password123');
+                            console.log('Sample events inserted');
+                            console.log('Database setup completed successfully!');
+                            console.log('\n Demo Accounts:');
+                            console.log('User: john@example.com / password123');
+                            console.log('Organizer: organizer@example.com / password123');
                             connection.end();
                         }
                     }
@@ -234,7 +234,7 @@ async function fixedSetup() {
         }
         
     } catch (error) {
-        console.error('❌ Setup failed:', error.message);
+        console.error('Setup failed:', error.message);
         if (connection) connection.end();
     }
 }
