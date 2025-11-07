@@ -40,7 +40,6 @@
         </div>
     </section>
 
-    <!-- ADD THIS SECTION AFTER FEATURED EVENTS -->
     <section class="container" id="bookedEventsSection" style="display: none;">
         <h2 class="section-title">Your Booked Events</h2>
         <div id="bookedEvents" class="events-grid">
@@ -59,7 +58,7 @@
     // Load featured events
     async function loadFeaturedEvents() {
         try {
-            console.log('🔄 Loading featured events...');
+            console.log('Loading featured events...');
             const response = await fetch('/api/events');
 
             if (!response.ok) {
@@ -67,7 +66,7 @@
             }
 
             const events = await response.json();
-            console.log('✅ Events loaded:', events);
+            console.log('Events loaded:', events);
 
             const featuredContainer = document.getElementById('featuredEvents');
 
@@ -144,7 +143,7 @@
             });
 
         } catch (error) {
-            console.error('❌ Error loading events:', error);
+            console.error('Error loading events:', error);
             const featuredContainer = document.getElementById('featuredEvents');
             featuredContainer.innerHTML = `
                 <div style="text-align: center; padding: 40px; grid-column: 1 / -1; color: var(--danger);">
@@ -183,7 +182,7 @@ async function loadBookedEvents() {
     try {
         const response = await fetch('/api/my-bookings');
         if (!response.ok) {
-            return; // User not logged in or no bookings
+            return; 
         }
 
         const bookings = await response.json();
@@ -224,16 +223,15 @@ async function loadBookedEvents() {
         }
     } catch (error) {
         console.error('Error loading booked events:', error);
-        // Don't show error if user is not logged in
     }
 }
 
     // Initialize when page loads
     document.addEventListener('DOMContentLoaded', function() {
-        console.log('🚀 Initializing home page...');
+        console.log('Initializing home page...');
         loadFeaturedEvents();
         loadBookedEvents();
-        // Note: auth.js automatically handles authentication UI
+        
     });
 </script>
 </body>
