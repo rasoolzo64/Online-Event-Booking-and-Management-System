@@ -7,7 +7,6 @@
     <title>All Events - EventHub</title>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- ADD THIS LINE -->
     <script src="/js/auth.js"></script>
 </head>
 
@@ -47,10 +46,10 @@
     </div>
 
     <script>
-        // Load all events - KEEP ONLY THIS FUNCTION
+        // Load all events 
         async function loadEvents() {
             try {
-                console.log('🔄 Loading events from API...');
+                console.log('Loading events from API...');
 
                 const response = await fetch('/api/events');
 
@@ -59,7 +58,7 @@
                 }
 
                 const events = await response.json();
-                console.log('✅ Events loaded:', events);
+                console.log('Events loaded:', events);
 
                 // Hide loading message
                 document.getElementById('loadingMessage').style.display = 'none';
@@ -99,17 +98,17 @@
                             <div class="event-content">
                                 <h3 class="event-title">${event.title}</h3>
                                 <div class="event-meta">
-                                    <span>📅 ${eventDate}</span>
-                                    <span>⏰ ${eventTime}</span>
+                                    <span>${eventDate}</span>
+                                    <span>${eventTime}</span>
                                 </div>
                                 <div class="event-meta">
-                                    <span>📍 ${event.location}</span>
-                                    <span>👤 Organized by: ${event.organizer_name || 'EventHub'}</span>
+                                    <span>${event.location}</span>
+                                    <span>Organized by: ${event.organizer_name || 'EventHub'}</span>
                                 </div>
                                 <p class="event-description">${event.description}</p>
                                 <div class="event-meta">
-                                    <span>🎫 Seats: ${event.available_seats}/${event.total_seats}</span>
-                                    <span>💰 ₹${event.price} per ticket</span>
+                                    <span>Seats: ${event.available_seats}/${event.total_seats}</span>
+                                    <span>₹${event.price} per ticket</span>
                                 </div>
                                 <div class="event-actions">
                                     <span class="event-price">Total: ₹${event.price}</span>
@@ -126,10 +125,10 @@
 
                 // Show events container
                 eventsContainer.style.display = 'grid';
-                console.log('✅ Events displayed on page');
+                console.log('Events displayed on page');
 
             } catch (error) {
-                console.error('❌ Error loading events:', error);
+                console.error('Error loading events:', error);
 
                 // Hide loading message
                 document.getElementById('loadingMessage').style.display = 'none';
