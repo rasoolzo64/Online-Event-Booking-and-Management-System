@@ -30,7 +30,7 @@
 .rupee {
     font-family: Arial, sans-serif;
 }
-/* Add this to your existing alert styles in style.css */
+/* alert styles */
 .alert-warning {
     background-color: #fff3cd;
     color: #856404;
@@ -285,19 +285,18 @@ section {
     gap: 8px;
 }
 
-/* FIXED: Event Description with proper line clamp */
+/* Event Description  */
 .event-description {
     margin-bottom: 20px;
     color: #555;
     line-height: 1.6;
-    /* Simple guaranteed working solution */
     overflow: hidden;
     max-height: 4.8em;
     display: block;
     position: relative;
 }
 
-/* Simple fallback without line-clamp */
+/* fallback */
 .event-description.fallback {
     display: block;
     overflow: hidden;
@@ -324,7 +323,6 @@ section {
     box-shadow: 0 0 0 3px rgba(67, 97, 238, 0.2);
 }
 
-/* ===== ADD YOUR NEW CSS HERE ===== */
 /* Style for date and time inputs */
 input[type="date"], input[type="time"] {
     padding: 12px 15px;
@@ -350,7 +348,6 @@ input[type="date"]:focus, input[type="time"]:focus {
         padding: 10px 12px;
     }
 }
-/* ===== END OF NEW CSS ===== */
 
 /* Dashboard Styles */
 .dashboard {
@@ -583,7 +580,6 @@ input[type="date"]:focus, input[type="time"]:focus {
     color: var(--gray-light);
     opacity: 0.7;
 }
-/* ADD THIS SECTION TO YOUR EXISTING style.css FILE */
 
 /* Form Container Styles (for login, register, booking) */
 .form-container {
@@ -885,21 +881,17 @@ input[type="date"]:focus, input[type="time"]:focus {
     background: var(--primary-dark);
 }
 
-/* Alternative solution using JavaScript-based line clamp */
 .line-clamp-3 {
     display: -webkit-box;
     -webkit-line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
-    
-    /* Standard property for modern browsers */
     display: -webkit-box;
     line-clamp: 3;
     -webkit-box-orient: vertical;
     overflow: hidden;
 }
 
-/* If the above still doesn't work, use this simple max-height solution */
 .simple-truncate {
     overflow: hidden;
     max-height: 4.8em;
