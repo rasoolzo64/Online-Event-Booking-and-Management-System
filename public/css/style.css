@@ -81,9 +81,6 @@ header {
     gap: 10px;
 }
 
-.logo::before {
-    content: "🎪";
-}
 
 .nav-menu {
     display: flex;
