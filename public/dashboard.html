@@ -106,7 +106,6 @@
 
     <script>
         // Update auth buttons and navigation based on user role
-        // Update auth buttons and navigation based on user role
 async function updateAuthAndNavigation() {
     try {
         const response = await fetch('/api/user-info');
@@ -139,12 +138,12 @@ async function updateAuthAndNavigation() {
             // Show admin link only for admin users
             if (userInfo.user.role === 'admin') {
                 adminLink.style.display = 'block';
-                console.log('Admin link shown'); // Debug log
+                console.log('Admin link shown'); 
             } else {
                 adminLink.style.display = 'none';
             }
 
-            // Update auth buttons
+            // auth buttons
             authButtons.innerHTML = `
                 <div style="display: flex; align-items: center; gap: 15px;">
                     <span class="welcome-text">
@@ -156,7 +155,7 @@ async function updateAuthAndNavigation() {
                 </div>
             `;
         } else {
-            console.log('User not logged in'); // Debug log
+            console.log('User not logged in'); 
             navThirdLink.textContent = 'My Bookings';
             navThirdLink.href = '/my-bookings.html';
             if (adminLink) adminLink.style.display = 'none';
@@ -362,7 +361,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (response.ok) {
                     showMessage('Event created successfully!', 'success');
                     this.reset();
-                    loadMyEvents(); // Refresh events list
+                    loadMyEvents(); 
                 } else {
                     showMessage(result.error, 'error');
                 }
