@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 
 async function freshDatabase() {
     return new Promise((resolve, reject) => {
-        console.log('🔄 Starting fresh database setup...');
+        console.log('Starting fresh database setup...');
         
         // Use regular mysql2 (not promise) for database operations
         const connection = mysql.createConnection({
@@ -14,22 +14,22 @@ async function freshDatabase() {
 
         connection.connect(async (err) => {
             if (err) {
-                console.error('❌ Connection failed:', err);
+                console.error('Connection failed:', err);
                 reject(err);
                 return;
             }
 
-            console.log('✅ Connected to MySQL');
+            console.log('Connected to MySQL');
 
             try {
                 // Drop and recreate database
                 await executeQuery(connection, 'DROP DATABASE IF EXISTS online_events');
                 await executeQuery(connection, 'CREATE DATABASE online_events');
-                console.log('✅ Database recreated');
+                console.log('Database recreated');
 
                 // Switch to database
                 await executeQuery(connection, 'USE online_events');
-                console.log('✅ Using database: online_events');
+                console.log('Using database: online_events');
 
                 // Create tables
                 await executeQuery(connection, `
@@ -42,7 +42,7 @@ async function freshDatabase() {
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                 `);
-                console.log('✅ Users table created');
+                console.log('Users table created');
 
                 await executeQuery(connection, `
                     CREATE TABLE events (
@@ -62,7 +62,7 @@ async function freshDatabase() {
                         FOREIGN KEY (organizer_id) REFERENCES users(id)
                     )
                 `);
-                console.log('✅ Events table created');
+                console.log('Events table created');
 
                 await executeQuery(connection, `
                     CREATE TABLE bookings (
@@ -79,7 +79,7 @@ async function freshDatabase() {
                         FOREIGN KEY (event_id) REFERENCES events(id)
                     )
                 `);
-                console.log('✅ Bookings table created');
+                console.log('Bookings table created');
 
                 // Create users
                 const hashedPassword = await bcrypt.hash('password123', 10);
@@ -97,7 +97,7 @@ async function freshDatabase() {
                         user
                     );
                 }
-                console.log('✅ Users created with password: password123');
+                console.log('Users created with password: password123');
                 
                 // Create sample events
                 const organizerResult = await executeQuery(connection, 'SELECT id FROM users WHERE email = "organizer@eventhub.com"');
@@ -139,7 +139,7 @@ async function freshDatabase() {
                         event
                     );
                 }
-                console.log('✅ Sample events created');
+                console.log('Sample events created');
 
                 // Create sample bookings
                 const userResult = await executeQuery(connection, 'SELECT id FROM users WHERE email = "user@eventhub.com"');
@@ -162,22 +162,22 @@ async function freshDatabase() {
                         [booking[2], booking[1]]
                     );
                 }
-                console.log('✅ Sample bookings created');
+                console.log('Sample bookings created');
                 
                 console.log('');
-                console.log('🎉 FRESH DATABASE READY!');
+                console.log('FRESH DATABASE READY!');
                 console.log('');
-                console.log('🔐 LOGIN CREDENTIALS:');
-                console.log('👑 Admin:      admin@eventhub.com / password123');
-                console.log('🎪 Organizer:  organizer@eventhub.com / password123'); 
-                console.log('👤 User:       user@eventhub.com / password123');
-                console.log('👤 Rasool:     rasool@gmail.com / password123');
+                console.log('LOGIN CREDENTIALS:');
+                console.log('Admin:      admin@eventhub.com / password123');
+                console.log('Organizer:  organizer@eventhub.com / password123'); 
+                console.log('User:       user@eventhub.com / password123');
+                console.log('Rasool:     rasool@gmail.com / password123');
                 
                 connection.end();
                 resolve();
                 
             } catch (error) {
-                console.error('❌ Error:', error);
+                console.error('Error:', error);
                 connection.end();
                 reject(error);
             }
