@@ -205,9 +205,9 @@
                     const eventImage = document.getElementById('eventImage');
                     eventImage.style.backgroundImage = `url('${currentEvent.image_url || getDefaultEventImage(currentEvent.title)}')`;
 
-                    // Update ticket max based on available seats - REMOVED 10 TICKET LIMIT
+                    // Update ticket max based on available seats
                     const ticketsInput = document.getElementById('tickets');
-                    ticketsInput.max = currentEvent.available_seats; // No artificial limit, only available seats limit
+                    ticketsInput.max = currentEvent.available_seats; 
 
                     // Show warning if limited seats
                     if (currentEvent.available_seats < 10) {
@@ -261,7 +261,7 @@
             }
         }
 
-        // Booking form submission - UPDATED TO REQUIRE LOGIN
+        // Booking form submission 
         document.getElementById('bookingForm').addEventListener('submit', async function (e) {
             e.preventDefault();
 
@@ -295,7 +295,7 @@
 
             const formData = new FormData(this);
             const data = {
-                eventId: eventId, // Use the eventId from URL, not from form
+                eventId: eventId, 
                 tickets: parseInt(formData.get('tickets')),
                 userName: formData.get('userName'),
                 userEmail: formData.get('userEmail')
@@ -349,7 +349,7 @@
             messageContainer.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
         }
 
-        // Update auth buttons and navigation based on user role - UPDATED TO PRE-FILL USER INFO
+        // Update auth buttons and navigation based on user role 
         async function updateAuthAndNavigation() {
             try {
                 const response = await fetch('/api/user-info');
